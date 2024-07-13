@@ -1,8 +1,9 @@
 <script setup>
 import { ref, computed } from 'vue'
 
-const MAX_ITERATIONS = 10;
-const STEP_SIZE = 50
+const MAX_ITERATIONS = 24;
+const STEP_SIZE = 50;
+const CUTLOSS = ref(11);
 const STOP_LOSS_LEVEL = ref(-STEP_SIZE * 3);
 
 const profitRatios = [
@@ -17,20 +18,14 @@ const profitRatios = [
     { name: 'x248', value: 248 }
 ];
 
-const multiplicationFactors = [
-    { name: 'x2', value: 2 },
-    { name: 'x3', value: 3 },
-    { name: 'x4', value: 4 },
-];
-
 const initialInvestment = ref(50);
-const selectedProfitRatio = ref(profitRatios[2]);
-const selectedMultiplicationFactor = ref(multiplicationFactors[0]);
-const cutLoss = ref(6);
+const selectedProfitRatio = ref(profitRatios[3]);
 
 const investmentResults = computed(() => {
     const results = [];
     let currentInvestment = initialInvestment.value;
+    let previousestInvestment = 0;
+    let previousInvestment = initialInvestment.value;
     let totalInvestment = 0;
 
     for (let i = 0; i < MAX_ITERATIONS; i++) {
@@ -38,7 +33,7 @@ const investmentResults = computed(() => {
         let grossProfit = Number.parseInt(currentInvestment * selectedProfitRatio.value.value);
         let netProfit = Number.parseInt(grossProfit - totalInvestment);
 
-        if (cutLoss.value > 0 && i >= cutLoss.value) {
+        if (CUTLOSS.value > 0 && i >= CUTLOSS.value) {
             while (netProfit >= STOP_LOSS_LEVEL.value) {
                 currentInvestment -= STEP_SIZE;
                 totalInvestment -= STEP_SIZE;
@@ -54,7 +49,10 @@ const investmentResults = computed(() => {
             totalInvestment
         });
 
-        currentInvestment *= selectedMultiplicationFactor.value.value;
+        currentInvestment = previousInvestment + previousestInvestment;
+        previousestInvestment = previousInvestment;
+        previousInvestment = currentInvestment;
+
     }
 
     return results;
@@ -66,7 +64,7 @@ const investmentResults = computed(() => {
         <thead>
             <tr class="text-left">
                 <th class="border border-black">
-                    <p class="font-bold">Loại gấp lên</p>
+                    <p class="font-bold">Loại gấp Fibonanci</p>
                 </th>
                 <th class="border border-black">
                     <div class="flex flex-col">
@@ -87,7 +85,7 @@ const investmentResults = computed(() => {
                 <th class="border border-black">
                     <div class="flex flex-col">
                         <label for="">Cắt lỗ tại</label>
-                        <InputNumber v-model="cutLoss" showButtons class="text-sm" :min="0" size="small"
+                        <InputNumber v-model="CUTLOSS" showButtons class="text-sm" :min="0" size="small"
                             placeholder="Cắt lỗ tại" aria-placeholder="Cắt lỗ tại"
                             aria-describedby="investment-help" />
                     </div>
@@ -119,5 +117,3 @@ const investmentResults = computed(() => {
         </tbody>
     </table>
 </template>
-
-<style scoped></style>

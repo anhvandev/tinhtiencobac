@@ -1,10 +1,14 @@
 <script setup>
 import GapDoi from './components/GapDoi.vue';
+import ChayCoi from './components/ChayCoi.vue';
+import Fibonanci from './components/Fibonanci.vue';
 </script>
 
 <template>
-    <main>
-        <GapDoi />
+    <main class="">
+        <GapDoi class="mb-10" />
+        <ChayCoi class="mb-10" />
+        <Fibonanci class="mb-10" />
     </main>
 </template>
 

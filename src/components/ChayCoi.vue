@@ -1,9 +1,8 @@
 <script setup>
 import { ref, computed } from 'vue'
 
-const MAX_ITERATIONS = 10;
+const MAX_ITERATIONS = 24;
 const STEP_SIZE = 50
-const STOP_LOSS_LEVEL = ref(-STEP_SIZE * 3);
 
 const profitRatios = [
     { name: 'x1.6', value: 1.66 },
@@ -24,9 +23,10 @@ const multiplicationFactors = [
 ];
 
 const initialInvestment = ref(50);
-const selectedProfitRatio = ref(profitRatios[2]);
+const selectedProfitRatio = ref(profitRatios[3]);
 const selectedMultiplicationFactor = ref(multiplicationFactors[0]);
-const cutLoss = ref(6);
+const cutLoss = ref(11);
+const STOP_LOSS_LEVEL = ref(-STEP_SIZE * 3);
 
 const investmentResults = computed(() => {
     const results = [];
@@ -37,6 +37,13 @@ const investmentResults = computed(() => {
         totalInvestment += currentInvestment;
         let grossProfit = Number.parseInt(currentInvestment * selectedProfitRatio.value.value);
         let netProfit = Number.parseInt(grossProfit - totalInvestment);
+
+        while (netProfit <= 0) {
+            currentInvestment += STEP_SIZE;
+            totalInvestment += STEP_SIZE;
+            grossProfit = Number.parseInt(currentInvestment * selectedProfitRatio.value.value);
+            netProfit = Number.parseInt(grossProfit - totalInvestment);
+        }
 
         if (cutLoss.value > 0 && i >= cutLoss.value) {
             while (netProfit >= STOP_LOSS_LEVEL.value) {
@@ -53,8 +60,6 @@ const investmentResults = computed(() => {
             netProfit,
             totalInvestment
         });
-
-        currentInvestment *= selectedMultiplicationFactor.value.value;
     }
 
     return results;
@@ -66,14 +71,12 @@ const investmentResults = computed(() => {
         <thead>
             <tr class="text-left">
                 <th class="border border-black">
-                    <p class="font-bold">Loại gấp lên</p>
+                    <p class="font-bold">Loại Chày cối</p>
                 </th>
                 <th class="border border-black">
-                    <div class="flex flex-col">
-                        <label for="">Chọn tỉ lệ</label>
-                        <Select v-model="selectedProfitRatio" :options="profitRatios" optionLabel="name"
-                            placeholder="Chọn tỉ lệ" class="w-full md:w-56" />
-                    </div>
+                    <label for="">Chọn tỉ lệ</label>
+                    <Select v-model="selectedProfitRatio" :options="profitRatios" optionLabel="name"
+                        placeholder="Chọn tỉ lệ" class="w-full md:w-56" />
                 </th>
                 <th class="border border-black">
                     <div class="flex flex-col">
@@ -85,16 +88,14 @@ const investmentResults = computed(() => {
                     </div>
                 </th>
                 <th class="border border-black">
-                    <div class="flex flex-col">
-                        <label for="">Cắt lỗ tại</label>
-                        <InputNumber v-model="cutLoss" showButtons class="text-sm" :min="0" size="small"
-                            placeholder="Cắt lỗ tại" aria-placeholder="Cắt lỗ tại"
-                            aria-describedby="investment-help" />
-                    </div>
+                    <label for="">Cắt lỗ tại</label>
+                    <InputNumber v-model="cutLoss" showButtons class="text-sm" :min="0" size="small"
+                        placeholder="Cắt lỗ tại" aria-placeholder="Cắt lỗ tại"
+                        aria-describedby="investment-help" />
                 </th>
             </tr>
             <tr class="text-left">
-                <th class="w-20 border border-black">Số trận</th>
+                <th class="border border-black w-28">Số trận</th>
                 <th class="w-20 border border-black">Đầu tư</th>
                 <th class="border border-black w-36">Lợi nhuận</th>
                 <th class="border border-black w-36">Lợi nhuận ròng</th>
