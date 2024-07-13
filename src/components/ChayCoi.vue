@@ -36,7 +36,6 @@ const investmentResults = computed(() => {
             totalInvestment += STEP_SIZE;
             grossProfit = Number.parseInt(currentInvestment * selectedProfitRatio.value.value);
             netProfit = Number.parseInt(grossProfit - totalInvestment);
-            console.log(netProfit)
         }
 
         if (cutLoss.value > 0 && i >= cutLoss.value) {
