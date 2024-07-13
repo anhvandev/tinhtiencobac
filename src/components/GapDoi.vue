@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 
-const MAX_ITERATIONS = 10;
+const MAX_ITERATIONS = ref(10);
 const STEP_SIZE = 50
 const STOP_LOSS_LEVEL = ref(-STEP_SIZE * 3);
 
@@ -33,7 +33,7 @@ const investmentResults = computed(() => {
     let currentInvestment = initialInvestment.value;
     let totalInvestment = 0;
 
-    for (let i = 0; i < MAX_ITERATIONS; i++) {
+    for (let i = 0; i < MAX_ITERATIONS.value; i++) {
         totalInvestment += currentInvestment;
         let grossProfit = Number.parseInt(currentInvestment * selectedProfitRatio.value.value);
         let netProfit = Number.parseInt(grossProfit - totalInvestment);
@@ -89,6 +89,15 @@ const investmentResults = computed(() => {
                         <label for="">Cắt lỗ tại</label>
                         <InputNumber v-model="cutLoss" showButtons class="text-sm" :min="0" size="small"
                             placeholder="Cắt lỗ tại" aria-placeholder="Cắt lỗ tại"
+                            aria-describedby="investment-help" />
+                    </div>
+                </th>
+                <th class="border border-black">
+                    <div class="flex flex-col">
+                        <label for="">Số trận</label>
+
+                        <InputNumber v-model="MAX_ITERATIONS" showButtons class="text-sm"
+                            size="small" placeholder="Số trận" aria-placeholder="Số trận"
                             aria-describedby="investment-help" />
                     </div>
                 </th>
