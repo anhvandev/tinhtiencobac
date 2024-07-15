@@ -89,7 +89,9 @@ const addItem = function () {
             </tr>
         </tbody>
     </table>
-    <Button label="Add" @click="addItem" />
+    <div class="p-10 mb-10">
+        <Button label="Add" @click="addItem" />
+    </div>
 </template>
 
 <style scoped></style>
